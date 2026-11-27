@@ -18,6 +18,18 @@
 	- Какими элементами языка С++ реализуется этот принцип?
 	- Приведите примеры кода, отображающие этот прицип.
 */
+
+
+//TODO
+/**
+ * 1) Наследование прыгающего и летающего врага от модели (не Enemy)
+ * 2) Марио двигается вместе с двигающейся платформой если на ней
+ * 3) Удалить MovingPlatform
+ * 4) Поднять двигающиеся платформы 2 уровня на 2-3 единицы
+ * 5) Добавить коробку с плащом-воды(coat_of_water), подобрав который он может ходить по воде
+ *
+*/
+#include <cstdio>
 #include <thread>
 
 #include "console_ui_factory.hpp"
@@ -47,61 +59,73 @@ int main() {
 	const int map_weight = 200;
 	auto frame_delay = std::chrono::milliseconds(0);
 	
-	biv::OSControlSettings* control_settings = nullptr;
-	biv::KeyBoard* keyboard = nullptr;
+	drw::OSControlSettings* control_settings = nullptr;
+	drw::KeyBoard* keyboard = nullptr;
 	#ifdef WINDOWS_CONSOLE
-		control_settings = new biv::WindowsControlSettings();
-		keyboard = new biv::WindowsKeyBoard();
+		control_settings = new drw::WindowsControlSettings();
+		keyboard = new drw::WindowsKeyBoard();
 		frame_delay = std::chrono::milliseconds(10);
 	#elif defined(LINUX_CONSOLE)
-		control_settings = new biv::LinuxControlSettings(map_height, map_weight);
-		keyboard = new biv::LinuxKeyboard();
+		control_settings = new drw::LinuxControlSettings(map_height, map_weight);
+		keyboard = new drw::LinuxKeyboard();
 		frame_delay = std::chrono::milliseconds(50);
 	#endif
 	
 	control_settings->init();
 	keyboard->on();
 	
-	biv::Game game;
-	biv::UIFactory* ui_factory = new biv::ConsoleUIFactory(&game);
-	biv::GameMap* game_map = ui_factory->get_game_map(map_height, map_weight);
-	biv::GameLevel* game_level = new biv::FirstLevel(ui_factory);
-	biv::Mario* mario = ui_factory->get_mario();
+	drw::Game game;
+	drw::UIFactory* ui_factory = new drw::ConsoleUIFactory(&game);
+	drw::GameMap* game_map = ui_factory->get_game_map(map_height, map_weight);
+	drw::GameLevel* game_level = new drw::FirstLevel(ui_factory);
+	drw::Mario* mario = ui_factory->get_mario();
 	
-	biv::UserInput user_input;
+	drw::UserInput user_input;
+	bool is_victory = false;
 	do {
 		// 2. Получение пользовательского ввода	
 		user_input = keyboard->get_user_input();
 		switch (user_input) {
-			case biv::UserInput::MAP_LEFT:
+			case drw::UserInput::MAP_LEFT:
 				mario->move_map_left();
 				if (!game.check_static_collisions(mario)) {
 					game.move_map_left();
 				}
 				mario->move_map_right();
 				break;
-			case biv::UserInput::MAP_RIGHT:
+			case drw::UserInput::MAP_RIGHT:
 				mario->move_map_right();
 				if (!game.check_static_collisions(mario)) {
 					game.move_map_right();
 				}
 				mario->move_map_left();
 				break;
-			case biv::UserInput::MARIO_JUMP:
+			case drw::UserInput::MARIO_JUMP:
 				mario->jump();
 				break;
-			case biv::UserInput::EXIT:
+			case drw::UserInput::EXIT:
 				game.finish();
 				break;
 		}
+
+
 		
 		// 3. Обновление внутреннего состояния игры
+
+		//TODO
+		/**
+		 * game.check_moving_platform
+		 * game.check_coat_of_water
+		 */
+
 		game.move_objs_horizontally();
+		game.carry_mario();
 		game.check_horizontally_static_collisions();
 		
 		game.move_objs_vertically();
 		game.check_mario_collision();
 		game.check_vertically_static_collisions();
+		ui_factory->remove_inactive_objs();
 		
 		if (
 			game_map->is_below_map(mario->get_top())
@@ -123,19 +147,27 @@ int main() {
 				keyboard->on();
 				game.start_level();
 			} else {
+				is_victory = true;
 				game.finish();
 			}
 		}
 		
-		// 4. Обновление изображения на экране
 		game_map->refresh();
 		control_settings->set_cursor_start_position();
 		game_map->show();
 		std::this_thread::sleep_for(frame_delay);
 	} while (
-		/* 5. Проверка того, не окончена ли игра */ 
 		!game.is_finished()
 	);
 	
-	// 6. Завершение
+#ifdef LINUX_CONSOLE
+	endwin();
+#endif
+	
+	if (is_victory) {
+		std::printf("\nПоздравляем! Вы прошли игру!\n");
+		std::printf("Нажмите Enter, чтобы выйти...");
+		std::fflush(stdout);
+		std::getchar();
+	}
 }

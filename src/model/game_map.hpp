@@ -1,6 +1,6 @@
 #pragma once
 
-namespace biv {
+namespace drw {
 	class GameMap {
 		protected:
 			const int height;

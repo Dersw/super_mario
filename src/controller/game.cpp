@@ -1,8 +1,9 @@
 #include "game.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 
-using biv::Game;
+using drw::Game;
 
 Game::Game() {}
 
@@ -22,8 +23,23 @@ void Game::add_movable(Movable* obj) {
 	movable_objs.push_back(obj);
 }
 
+void Game::add_moving_platform(MovingPlatform* obj) {
+	moving_platforms.push_back(obj);
+}
+
 void Game::add_static_obj(Rect* obj) {
 	static_objs.push_back(obj);
+}
+
+void Game::carry_mario() noexcept {
+	if (mario == nullptr) {
+		return;
+	}
+	for (MovingPlatform* platform: moving_platforms) {
+		if (is_mario_on_platform(platform)) {
+			mario->move_horizontal_offset(platform->get_speed().h);
+		}
+	}
 }
 
 void Game::check_horizontally_static_collisions() noexcept {
@@ -45,7 +61,14 @@ void Game::check_mario_collision() {
 			if (!mario->is_active()) {
 				break;
 			} else if (!obj->is_active()) {
-				// TODO
+				// Убитый враг или собранная монета должны исчезнуть из мира:
+				// убираем их из модельных контейнеров (вид чистит фабрика).
+				if (Movable* movable = dynamic_cast<Movable*>(obj)) {
+					remove_movable(movable);
+					if (MapMovable* map_movable = dynamic_cast<MapMovable*>(obj)) {
+						remove_map_movable(map_movable);
+					}
+				}
 				collisionable_objs[i] = collisionable_objs.back();
 				collisionable_objs.pop_back();
 				i--;
@@ -134,6 +157,7 @@ void Game::remove_objs() {
 	collisionable_objs.clear();
 	map_movable_objs.clear();
 	movable_objs.clear();
+	moving_platforms.clear();
 	static_objs.clear();
 	remove_mario();
 }
@@ -156,5 +180,14 @@ void Game::remove_obj(std::vector<T*>& container, T* obj) {
 			container.begin(), container.end(), obj
 		), 
 		container.end()
+	);
+}
+
+bool Game::is_mario_on_platform(MovingPlatform* platform) const noexcept {
+	Rect mario_rect = mario->get_rect();
+	return (
+		std::abs(mario_rect.get_bottom() - platform->get_top()) <= 1 &&
+		mario_rect.get_right() > platform->get_left() &&
+		mario_rect.get_left() < platform->get_right()
 	);
 }

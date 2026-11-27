@@ -2,7 +2,7 @@
 
 #include "os_control_settings.hpp"
 
-namespace biv {
+namespace drw {
 	class LinuxControlSettings : public OSControlSettings {
 		private:
 			int height;
