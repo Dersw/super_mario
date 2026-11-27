@@ -5,10 +5,18 @@
 using drw::FlyableEnemy;
 
 FlyableEnemy::FlyableEnemy(const Coord& top_left, const int width, const int height) 
-	: Enemy(top_left, width, height), 
+	: RectMapMovableAdapter(top_left, width, height), 
 		base_x(top_left.x), base_y(top_left.y) {
 	hspeed = 0.2;
 	vspeed = -0.15;
+}
+
+drw::Rect FlyableEnemy::get_rect() const noexcept {
+	return {top_left, width, height};
+}
+
+drw::Speed FlyableEnemy::get_speed() const noexcept {
+	return {vspeed, hspeed};
 }
 
 void FlyableEnemy::move_horizontally() noexcept {
@@ -37,6 +45,19 @@ void FlyableEnemy::move_map_left() noexcept {
 void FlyableEnemy::move_map_right() noexcept {
 	top_left.x += MapMovable::MAP_STEP;
 	base_x += MapMovable::MAP_STEP;
+}
+
+void FlyableEnemy::process_horizontal_static_collision(Rect* obj) noexcept {
+	hspeed = -hspeed;
+	move_horizontally();
+}
+
+void FlyableEnemy::process_mario_collision(Collisionable* mario) noexcept {
+	if (mario->get_speed().v > 0 && mario->get_speed().v != V_ACCELERATION) {
+		kill();
+	} else {
+		mario->kill();
+	}
 }
 
 void FlyableEnemy::process_vertical_static_collision(Rect* obj) noexcept {

@@ -41,9 +41,10 @@ void SecondLevel::init_data() {
 	ui_factory->create_box({62, 10}, 10, 3);
 	ui_factory->create_full_box({74, 10}, 5, 3);
 	ui_factory->create_box({82, 10}, 8, 3);
+	ui_factory->create_coat_of_water_box({91, 13}, 5, 3);
 	
 	// Движущаяся платформа через пропасть: служит безопасной ступенькой.
-	ui_factory->create_floating_ship({105, 22}, 10, 2);
+	ui_factory->create_floating_ship({105, 19}, 10, 2);
 	
 	// Средний широкий корабль.
 	ui_factory->create_ship({120, 25}, 40, 2);
@@ -56,7 +57,7 @@ void SecondLevel::init_data() {
 	ui_factory->create_flyable_enemy({150, 10}, 3, 2);
 	
 	// Вторая движущаяся платформа.
-	ui_factory->create_floating_ship({165, 22}, 10, 2);
+	ui_factory->create_floating_ship({165, 19}, 10, 2);
 	
 	// Финальный широкий корабль-выход. Создаётся последним среди статических объектов!
 	ui_factory->create_ship({180, 25}, 40, 2);

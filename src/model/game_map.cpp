@@ -5,6 +5,10 @@ using drw::GameMap;
 GameMap::GameMap(const int height, const int width) 
 	: height(height), width(width) {}
 
+int GameMap::get_water_level() const noexcept {
+	return height - WATER_HEIGHT;
+}
+
 bool GameMap::is_below_map(const int y) const noexcept {
 	return y > height;
 }

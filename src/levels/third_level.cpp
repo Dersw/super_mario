@@ -44,6 +44,7 @@ void ThirdLevel::init_data() {
 	// Корабль-остров перед финальным рывком.
 	ui_factory->create_ship({148, 25}, 20, 2);
 	ui_factory->create_full_box({152, 17}, 5, 3);
+	ui_factory->create_coat_of_water_box({158, 18}, 5, 3);
 	ui_factory->create_enemy({160, 22}, 3, 2);
 
 	// Последний движущийся корабль к выходу.

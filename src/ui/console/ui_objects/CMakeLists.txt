@@ -1,6 +1,8 @@
 target_sources(${PROJECT_NAME}
 	PRIVATE
 		console_box.cpp
+		console_coat_of_water.cpp
+		console_coat_of_water_box.cpp
 		console_enemy.cpp
 		console_floating_ship.cpp
 		console_flyable_enemy.cpp

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "console_box.hpp"
+#include "console_coat_of_water.hpp"
+#include "console_coat_of_water_box.hpp"
 #include "console_enemy.hpp"
 #include "console_floating_ship.hpp"
 #include "console_flyable_enemy.hpp"
@@ -17,6 +19,8 @@ namespace drw {
 		private:
 			ConsoleGameMap* game_map = nullptr;
 			std::vector<ConsoleBox*> boxes;
+			std::vector<ConsoleCoatOfWater*> coat_of_waters;
+			std::vector<ConsoleCoatOfWaterBox*> coat_of_water_boxes;
 			std::vector<ConsoleFloatingShip*> floating_ships;
 			std::vector<ConsoleFullBox*> full_boxes;
 			std::vector<ConsoleShip*> ships;
@@ -32,6 +36,12 @@ namespace drw {
 			void clear_data() override;
 			void remove_inactive_objs() override;
 			void create_box(
+				const Coord& top_left, const int width, const int height
+			) override;
+			void create_coat_of_water(
+				const Coord& top_left, const int width, const int height
+			) override;
+			void create_coat_of_water_box(
 				const Coord& top_left, const int width, const int height
 			) override;
 			void create_enemy(

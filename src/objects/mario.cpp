@@ -15,6 +15,14 @@ drw::Speed Mario::get_speed() const noexcept {
 	return {vspeed, hspeed};
 }
 
+bool Mario::has_coat_of_water() const noexcept {
+	return has_coat_of_water_;
+}
+
+void Mario::set_coat_of_water(const bool value) noexcept {
+	has_coat_of_water_ = value;
+}
+
 void Mario::move_map_left() noexcept {
 	move_horizontal_offset(drw::MapMovable::MAP_STEP);
 }

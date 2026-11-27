@@ -19,16 +19,6 @@
 	- Приведите примеры кода, отображающие этот прицип.
 */
 
-
-//TODO
-/**
- * 1) Наследование прыгающего и летающего врага от модели (не Enemy)
- * 2) Марио двигается вместе с двигающейся платформой если на ней
- * 3) Удалить MovingPlatform
- * 4) Поднять двигающиеся платформы 2 уровня на 2-3 единицы
- * 5) Добавить коробку с плащом-воды(coat_of_water), подобрав который он может ходить по воде
- *
-*/
 #include <cstdio>
 #include <thread>
 
@@ -111,20 +101,14 @@ int main() {
 
 		
 		// 3. Обновление внутреннего состояния игры
-
-		//TODO
-		/**
-		 * game.check_moving_platform
-		 * game.check_coat_of_water
-		 */
-
 		game.move_objs_horizontally();
-		game.carry_mario();
+		game.check_moving_platform();
 		game.check_horizontally_static_collisions();
 		
 		game.move_objs_vertically();
 		game.check_mario_collision();
 		game.check_vertically_static_collisions();
+		game.check_coat_of_water();
 		ui_factory->remove_inactive_objs();
 		
 		if (

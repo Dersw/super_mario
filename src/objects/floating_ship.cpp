@@ -9,14 +9,6 @@ FloatingShip::FloatingShip(const Coord& top_left, const int width, const int hei
 	hspeed = 0.2f;
 }
 
-drw::Rect FloatingShip::get_rect() const noexcept {
-	return {top_left, width, height};
-}
-
-drw::Speed FloatingShip::get_speed() const noexcept {
-	return {vspeed, hspeed};
-}
-
 void FloatingShip::move_horizontally() noexcept {
 	// Катаемся вправо-влево в пределах своего участка.
 	if (top_left.x <= base_x - PATROL_RANGE) {

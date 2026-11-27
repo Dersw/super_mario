@@ -1,5 +1,7 @@
 target_sources(${PROJECT_NAME}
 	PRIVATE
+		coat_of_water.cpp
+		coat_of_water_box.cpp
 		full_box.cpp
 		enemy.cpp
 		floating_ship.cpp

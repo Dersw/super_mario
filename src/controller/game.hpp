@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "collisionable.hpp"
+#include "game_map.hpp"
 #include "map_movable.hpp"
 #include "mario.hpp"
 #include "movable.hpp"
-#include "moving_platform.hpp"
 #include "rect.hpp"
 
 namespace drw {
@@ -20,8 +20,8 @@ namespace drw {
 			std::vector<Rect*> static_objs;
 			std::vector<Collisionable*> collisionable_objs;
 			std::vector<Movable*> movable_objs;
-			std::vector<MovingPlatform*> moving_platforms;
 			
+			GameMap* game_map = nullptr;
 			Mario* mario = nullptr;
 			
 			bool is_finished_ = false;
@@ -34,12 +34,12 @@ namespace drw {
 			void add_map_movable(MapMovable*);
 			void add_mario(Mario*);
 			void add_movable(Movable*);
-			void add_moving_platform(MovingPlatform*);
 			void add_static_obj(Rect*);
 			
-			void carry_mario() noexcept;
+			void check_coat_of_water() noexcept;
 			void check_horizontally_static_collisions() noexcept;
 			void check_mario_collision();
+			void check_moving_platform() noexcept;
 			bool check_static_collisions(Collisionable* obj) const noexcept;
 			void check_vertically_static_collisions() noexcept;
 			
@@ -60,12 +60,11 @@ namespace drw {
 			void remove_objs();
 			void remove_static_obj(Rect*);
 			
+			void set_game_map(GameMap*) noexcept;
 			void start_level() noexcept;
 
 		private:
 			template<class T>
 			void remove_obj(std::vector<T*>& container, T* obj);
-			
-			bool is_mario_on_platform(MovingPlatform*) const noexcept;
 	};
 }

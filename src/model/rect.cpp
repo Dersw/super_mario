@@ -27,6 +27,10 @@ int Rect::get_top() const noexcept {
 	return std::round(top_left.y);
 }
 
+int Rect::get_width() const noexcept {
+	return width;
+}
+
 float Rect::get_x() const noexcept {
 	return top_left.x;
 }

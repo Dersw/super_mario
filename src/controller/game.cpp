@@ -1,7 +1,6 @@
 #include "game.hpp"
 
 #include <algorithm>
-#include <cstdlib>
 
 using drw::Game;
 
@@ -23,21 +22,27 @@ void Game::add_movable(Movable* obj) {
 	movable_objs.push_back(obj);
 }
 
-void Game::add_moving_platform(MovingPlatform* obj) {
-	moving_platforms.push_back(obj);
-}
-
 void Game::add_static_obj(Rect* obj) {
 	static_objs.push_back(obj);
 }
 
-void Game::carry_mario() noexcept {
-	if (mario == nullptr) {
+void Game::check_coat_of_water() noexcept {
+	if (mario == nullptr || game_map == nullptr || !mario->has_coat_of_water()) {
 		return;
 	}
-	for (MovingPlatform* platform: moving_platforms) {
-		if (is_mario_on_platform(platform)) {
-			mario->move_horizontal_offset(platform->get_speed().h);
+	Rect mario_rect = mario->get_rect();
+	Rect water(
+		{static_cast<float>(mario_rect.get_left()), static_cast<float>(game_map->get_water_level())},
+		mario_rect.get_width(),
+		GameMap::WATER_HEIGHT
+	);
+	if (mario->has_collision(&water)) {
+		if (mario->get_vspeed() > 0) {
+			mario->process_vertical_static_collision(&water);
+		} else if (mario->get_vspeed() == 0) {
+			mario->move_vertical_offset(
+				static_cast<float>(water.get_top() - mario_rect.get_bottom())
+			);
 		}
 	}
 }
@@ -73,6 +78,27 @@ void Game::check_mario_collision() {
 				collisionable_objs.pop_back();
 				i--;
 			}
+		}
+	}
+}
+
+void Game::check_moving_platform() noexcept {
+	if (mario == nullptr || mario->get_vspeed() < 0) {
+		return;
+	}
+	Rect mario_rect = mario->get_rect();
+	for (Rect* static_obj: static_objs) {
+		Movable* platform = dynamic_cast<Movable*>(static_obj);
+		if (platform == nullptr) {
+			continue;
+		}
+		if (
+			mario_rect.get_bottom() == static_obj->get_top() &&
+			mario_rect.get_right() > static_obj->get_left() &&
+			mario_rect.get_left() < static_obj->get_right()
+		) {
+			mario->move_horizontal_offset(platform->get_hspeed());
+			break;
 		}
 	}
 }
@@ -157,13 +183,16 @@ void Game::remove_objs() {
 	collisionable_objs.clear();
 	map_movable_objs.clear();
 	movable_objs.clear();
-	moving_platforms.clear();
 	static_objs.clear();
 	remove_mario();
 }
 
 void Game::remove_static_obj(Rect* obj) {
 	remove_obj(static_objs, obj);
+}
+
+void Game::set_game_map(GameMap* map) noexcept {
+	game_map = map;
 }
 
 void Game::start_level() noexcept {
@@ -180,14 +209,5 @@ void Game::remove_obj(std::vector<T*>& container, T* obj) {
 			container.begin(), container.end(), obj
 		), 
 		container.end()
-	);
-}
-
-bool Game::is_mario_on_platform(MovingPlatform* platform) const noexcept {
-	Rect mario_rect = mario->get_rect();
-	return (
-		std::abs(mario_rect.get_bottom() - platform->get_top()) <= 1 &&
-		mario_rect.get_right() > platform->get_left() &&
-		mario_rect.get_left() < platform->get_right()
 	);
 }

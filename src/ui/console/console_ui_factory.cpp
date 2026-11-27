@@ -5,11 +5,12 @@ using drw::ConsoleUIFactory;
 ConsoleUIFactory::ConsoleUIFactory(Game* game) : UIFactory(game) {}
 
 void ConsoleUIFactory::remove_inactive_objs() {
-	// Убитых врагов и собранные монеты пора убрать с карты.
+	// Убитых врагов, собранные монеты и плащ воды пора убрать с карты.
 	remove_inactive(enemies);
 	remove_inactive(flyable_enemies);
 	remove_inactive(jumpable_enemies);
 	remove_inactive(moneys);
+	remove_inactive(coat_of_waters);
 }
 
 template<class T>
@@ -35,6 +36,8 @@ void ConsoleUIFactory::clear_data() {
 	delete mario;
 	mario = nullptr;
 	boxes.clear();
+	coat_of_waters.clear();
+	coat_of_water_boxes.clear();
 	full_boxes.clear();
 	floating_ships.clear();
 	ships.clear();
@@ -52,6 +55,28 @@ void ConsoleUIFactory::create_box(
 	game->add_map_movable(box);
 	game->add_static_obj(box);
 	game_map->add_obj(box);
+}
+
+void ConsoleUIFactory::create_coat_of_water(
+	const Coord& top_left, const int width, const int height
+) {
+	ConsoleCoatOfWater* coat = new ConsoleCoatOfWater(top_left, width, height);
+	coat_of_waters.push_back(coat);
+	game->add_map_movable(coat);
+	game->add_movable(coat);
+	game->add_collisionable(coat);
+	game_map->add_obj(coat);
+}
+
+void ConsoleUIFactory::create_coat_of_water_box(
+	const Coord& top_left, const int width, const int height
+) {
+	ConsoleCoatOfWaterBox* coat_box = new ConsoleCoatOfWaterBox(top_left, width, height, this);
+	coat_of_water_boxes.push_back(coat_box);
+	game->add_collisionable(coat_box);
+	game->add_map_movable(coat_box);
+	game->add_static_obj(coat_box);
+	game_map->add_obj(coat_box);
 }
 
 void ConsoleUIFactory::create_enemy(
@@ -81,7 +106,6 @@ void ConsoleUIFactory::create_floating_ship(
 ) {
 	ConsoleFloatingShip* ship = new ConsoleFloatingShip(top_left, width, height);
 	floating_ships.push_back(ship);
-	game->add_moving_platform(ship);
 	game->add_map_movable(ship);
 	game->add_movable(ship);
 	game->add_static_obj(ship);
@@ -151,6 +175,7 @@ void ConsoleUIFactory::create_ship(
 drw::GameMap* ConsoleUIFactory::get_game_map(const int height, const int width) {
 	if (game_map == nullptr) {
 		game_map = new ConsoleGameMap(height, width);
+		game->set_game_map(game_map);
 	}
 	return game_map;
 }

@@ -21,6 +21,7 @@ namespace drw {
 			);
 
 		public:
+			float get_hspeed() const noexcept;
 			float get_vspeed() const noexcept;
 			void jump() noexcept;
 			void move_horizontal_offset(const float offset) noexcept;
